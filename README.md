@@ -636,30 +636,29 @@ java -jar demo-0.0.1-SNAPSHOT.jar --server.port=8087  --server.context-path=/myc
 
 **2、@EnableAutoConfiguration 作用：**
 
- -  利用AutoConfigurationImportSelector给容器中导入一些组件？
+- 利用AutoConfigurationImportSelector给容器中导入一些组件？
 
 - 可以查看selectImports()方法的内容；
 
-- ```
+```
 List<String> configurations = this.getCandidateConfigurations(annotationMetadata, attributes);
-  ```
+```
   
   获取候选的配置
   
-  - ```
+```
   SpringFactoriesLoader.loadFactoryNames()
     org.springframework.core.io.support.SpringFactoriesLoader#loadSpringFactories
   扫描所有jar包类路径下  META-INF/spring.factories
     把扫描到的这些文件的内容包装成properties对象
   从properties中获取到EnableAutoConfiguration.class类（类名）对应的值，然后把他们添加在容器中
-    ```
+```    
   
-    **将类路径下  META-INF/spring.factories 里面配置的所有EnableAutoConfiguration的值加入到了容器中；**
+**将类路径下  META-INF/spring.factories 里面配置的所有EnableAutoConfiguration的值加入到了容器中；**
 
 ![1571731430990](images/1571731430990.png)
 
 ```
-
 # Initializers
 org.springframework.context.ApplicationContextInitializer=\
 org.springframework.boot.autoconfigure.SharedMetadataReaderFactoryContextInitializer,\
@@ -821,7 +820,6 @@ org.springframework.boot.autoconfigure.mustache.MustacheTemplateAvailabilityProv
 org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAvailabilityProvider,\
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafTemplateAvailabilityProvider,\
 org.springframework.boot.autoconfigure.web.servlet.JspTemplateAvailabilityProvider
-
 ```
 
 每一个这样的  xxxAutoConfiguration类都是容器中的一个组件，都加入到容器中；用他们来做自动配置；
@@ -831,7 +829,6 @@ org.springframework.boot.autoconfigure.web.servlet.JspTemplateAvailabilityProvid
 **4、以HttpEncodingAutoConfiguration（Http编码自动配置）为例解释自动配置原理；**
 
 ```
-
 @Configuration   //表示这是一个配置类，以前编写的配置文件一样，也可以给容器中添加组件
 @EnableConfigurationProperties(HttpEncodingProperties.class)  //启动指定类的ConfigurationProperties功能；将配置文件中对应的值和HttpEncodingProperties绑定起来；并把HttpEncodingProperties加入到ioc容器中
 
@@ -860,7 +857,6 @@ public class HttpEncodingAutoConfiguration {
 		filter.setForceResponseEncoding(this.properties.shouldForce(Type.RESPONSE));
 		return filter;
 	}
-
 ```
 
 根据当前不同的条件判断，决定这个配置类是否生效？
