@@ -51,4 +51,9 @@ public class HelloController {
     public String personInfo(@RequestParam("name")String name){
         return name +"_"+ helloService.helloEvery(person);
     }
+
+    @GetMapping("/cmccHello/{word}")
+    public String cmccSayHello(@PathVariable("word") String word){
+        return helloService.cmccSayHello(word);
+    }
 }

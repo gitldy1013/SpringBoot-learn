@@ -94,6 +94,14 @@
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
         <!-- Spring Data Jpa -->
+
+        <!-- 自定义的 cmcc starter -->
+        <dependency>
+            <groupId>com.cmcc.starter</groupId>
+            <artifactId>cmcc-spring-boot-starter</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <!-- 自定义的 cmcc starter -->
     </dependencies>
 
 </project>
