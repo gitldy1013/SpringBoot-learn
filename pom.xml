@@ -30,6 +30,13 @@
         </plugins>
     </build>
 
+    <modules>
+        <module>cmcc-spring-boot-starter-autoconfigurer</module>
+        <module>cmcc-spring-boot-starter</module>
+        <module>mock-spring-boot-starter-autoconfigurer</module>
+        <module>mock-spring-boot-starter</module>
+    </modules>
+
     <!-- 这个插件，可以将应用打包成一个可执行的jar包 -->
     <!-- 将这个应用打成jar包，直接使用java -jar的命令进行执行 -->
     <dependencies>

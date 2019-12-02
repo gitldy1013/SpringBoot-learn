@@ -1,5 +1,7 @@
 package com.cmcc.demo.demo;
 
+import lombok.Data;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.locks.Condition;
@@ -7,8 +9,10 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * 打印10次ABC
- */
+ * @Author: dyliu
+ * @Description: 循环顺序打印10次ABC
+ * @Date: 17:52 2019/12/2
+ **/
 public class AlConcurrent {
 
     public static void main(String[] args) throws InterruptedException {
@@ -22,6 +26,7 @@ public class AlConcurrent {
         threadC.start();
     }
 
+    @Data
     static class Instance {
         //请在这里补全代码
         int countnum = 0;
@@ -34,31 +39,25 @@ public class AlConcurrent {
             return countnum;
         }
 
-        public void setCountnum(int countnum) {
+        void setCountnum(int countnum) {
             this.countnum = countnum;
         }
 
-        public Instance() {
+        Instance() {
+            //线程级联绑定
             nextThreadName.put("thread_a", "thread_b");
             nextThreadName.put("thread_b", "thread_c");
             nextThreadName.put("thread_c", "thread_a");
-
+            //线程与自己的condition绑定
             thread4Condition.put("thread_a", lock.newCondition());
             thread4Condition.put("thread_b", lock.newCondition());
             thread4Condition.put("thread_c", lock.newCondition());
         }
 
-        public Lock getLock() {
-            return lock;
-        }
-
-        public Condition getConditionsByThreadName(String threadName) {
+        Condition getConditionsByThreadName(String threadName) {
             return thread4Condition.get(threadName);
         }
 
-        public LinkedHashMap<String, String> getNextThreadName() {
-            return nextThreadName;
-        }
     }
 
     static class AlRunable implements Runnable {
@@ -70,7 +69,7 @@ public class AlConcurrent {
         Instance instance;
         String threadName;
 
-        public AlRunable(Instance instance, String name) {
+        AlRunable(Instance instance, String name) {
             this.threadName = name;
             this.instance = instance;
         }
@@ -84,11 +83,13 @@ public class AlConcurrent {
             lock = instance.getLock();
             while (true) {
                 lock.lock();
-                if(count==100) {
+                //last unlock
+                if (count == 10) {
                     conditionNext.signal();
                     lock.unlock();
                     break;
                 }
+                //await currentThread && sigal next Thread
                 try {
                     System.out.println(Thread.currentThread().getName() + "-ABC-" + count);
                     instance.setCountnum(++count);
@@ -101,7 +102,6 @@ public class AlConcurrent {
                 }
             }
         }
-
     }
 
 
