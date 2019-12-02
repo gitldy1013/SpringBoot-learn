@@ -11,7 +11,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class AlConcurrent {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         Instance instance = new Instance();
         Thread threadA = new Thread(new AlRunable(instance, "thread_a"));
         Thread threadB = new Thread(new AlRunable(instance, "thread_b"));
@@ -63,7 +63,7 @@ public class AlConcurrent {
 
     static class AlRunable implements Runnable {
         //请在这里补全代码
-        int count;
+        static int count;
         Lock lock;
         Condition condition;
         Condition conditionNext;
@@ -78,19 +78,22 @@ public class AlConcurrent {
         @Override
         public void run() {
             //请在这里补全代码
-            this.count = instance.getCountNum();
-            lock = instance.getLock();
+            count = instance.getCountNum();
             condition = instance.getConditionsByThreadName(threadName);
             conditionNext = instance.getConditionsByThreadName(instance.getNextThreadName().get(threadName));
+            lock = instance.getLock();
             while (true) {
                 lock.lock();
-                try {
-                    while (count % 3 != 2) {
-                        condition.await();
-                    }
-                    instance.setCountnum(count++);
-                    System.out.println(Thread.currentThread().getName() + "ABC");
+                if(count==10) {
                     conditionNext.signal();
+                    lock.unlock();
+                    break;
+                }
+                try {
+                    System.out.println(Thread.currentThread().getName() + "-ABC-" + count);
+                    instance.setCountnum(++count);
+                    conditionNext.signal();
+                    condition.await();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } finally {
