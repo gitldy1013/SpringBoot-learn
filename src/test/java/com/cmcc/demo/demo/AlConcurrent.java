@@ -84,7 +84,7 @@ public class AlConcurrent {
             lock = instance.getLock();
             while (true) {
                 lock.lock();
-                if(count==10) {
+                if(count==100) {
                     conditionNext.signal();
                     lock.unlock();
                     break;
