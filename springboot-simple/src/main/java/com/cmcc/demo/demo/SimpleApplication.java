@@ -10,10 +10,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 //使用MapperScan批量扫描所有的Mapper接口；
 @MapperScan(value = "com.cmcc.demo.demo.mapper")
 @SpringBootApplication
-public class DemoApplication {
+public class SimpleApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(DemoApplication.class, args);
+        SpringApplication.run(SimpleApplication.class, args);
     }
 
 }

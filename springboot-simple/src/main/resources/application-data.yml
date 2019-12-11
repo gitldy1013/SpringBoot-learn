@@ -70,3 +70,6 @@ mybatis:
   config-location: classpath:mybatis/mybatis-config.xml
   # 指定sql映射文件位置
   mapper-locations: classpath:mybatis/mapper/*.xml
+  # 开启驼峰命名法
+  configuration:
+    map-underscore-to-camel-case: true
