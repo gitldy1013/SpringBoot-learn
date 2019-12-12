@@ -1,8 +1,8 @@
 spring:
   datasource:
     username: root
-    password: 123456
-    url: jdbc:mysql://localhost:6603/jdbc
+    password: class1013leg
+    url: jdbc:mysql://leg.liudongyang.top:6603/jdbc
     driver-class-name: com.mysql.cj.jdbc.Driver
     schema:
       - classpath:sql/department.sql
@@ -67,9 +67,11 @@ spring:
 # mybatis配置
 mybatis:
   # 指定全局配置文件位置
-  config-location: classpath:mybatis/mybatis-config.xml
+  # config-location: classpath:mybatis/mybatis-config.xml
   # 指定sql映射文件位置
   mapper-locations: classpath:mybatis/mapper/*.xml
   # 开启驼峰命名法
   configuration:
     map-underscore-to-camel-case: true
+# 开启配置报告
+debug: true

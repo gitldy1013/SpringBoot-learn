@@ -19,7 +19,7 @@ import javax.annotation.Resource;
  */
 @Configuration
 @Slf4j
-@EnableConfigurationProperties({Person.class})//坑：使用自定义配置文件并且没有讲配置信息引入到springboot的配置环境时 此注解无效
+@EnableConfigurationProperties({Person.class})//坑：使用自定义配置文件 配置信息引入到springboot的配置环境时 此注解无效
 public class MyAppConfig {
 
     @Resource

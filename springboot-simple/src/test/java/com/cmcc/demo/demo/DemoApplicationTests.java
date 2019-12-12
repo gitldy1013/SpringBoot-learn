@@ -48,7 +48,9 @@ class DemoApplicationTests {
         log.info(dataSource.getClass().toString());
         Connection connection = dataSource.getConnection();
         List<Map<String, Object>> list = jdbcTemplate.queryForList("select * FROM department");
-        log.info(list.get(0).toString());
+        if(list.size()>0){
+            log.info(list.get(0).toString());
+        }
         connection.close();
     }
 

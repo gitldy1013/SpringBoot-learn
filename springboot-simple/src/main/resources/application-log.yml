@@ -1,12 +1,9 @@
 logging:
   file:
     path: ./log
+    clean-history-on-start: true
   level:
-    com:
-      cmcc: dubug
-#        demo:
-#          demo:
-#            mapper:
+    root: debug
   #  在控制台输出的日志的格式并指定文件中日志输出的格式
   pattern:
     console: '%d{yyyy-MM-dd} [%thread] %-5level %logger{50} - %msg%n'
