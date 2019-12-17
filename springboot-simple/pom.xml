@@ -112,6 +112,13 @@
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <!-- 自定义的 cmcc starter -->
+
+        <!--redis starter -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <!--redis starter -->
     </dependencies>
 
 </project>

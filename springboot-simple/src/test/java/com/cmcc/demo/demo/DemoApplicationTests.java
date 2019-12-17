@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -37,7 +39,10 @@ class DemoApplicationTests {
     JdbcTemplate jdbcTemplate;
 
     @Resource
-    private RestTemplate restTemplate;
+    private RedisTemplate redisTemplate; //k-v都是Object
+
+    @Resource
+    private StringRedisTemplate stringRedisTemplate; //k-v都是String
 
     @Test
     void contextLoads() throws SQLException {
@@ -48,10 +53,25 @@ class DemoApplicationTests {
         log.info(dataSource.getClass().toString());
         Connection connection = dataSource.getConnection();
         List<Map<String, Object>> list = jdbcTemplate.queryForList("select * FROM department");
-        if(list.size()>0){
+        if (list.size() > 0) {
             log.info(list.get(0).toString());
         }
         connection.close();
+    }
+
+    /**
+     * Redis常用的五种数据类型：
+     * String(字符串),List(列表),Set(集合),Hash(哈希表),ZSet(有序集合)
+     */
+    @Test
+    void redisTest() {
+//        stringRedisTemplate.opsForValue();
+//        stringRedisTemplate.opsForList();
+//        stringRedisTemplate.opsForSet();
+//        stringRedisTemplate.opsForHash();
+//        stringRedisTemplate.opsForZSet();
+        Integer append = stringRedisTemplate.opsForValue().append("msg", "hello");
+
     }
 
 }

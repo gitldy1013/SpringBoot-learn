@@ -63,7 +63,10 @@ spring:
       ddl-auto: update
       # 控制台显示SQL
     show-sql: true
-
+# redis配置
+  redis:
+    host: 101.200.86.90
+    password: test@dbuser2019
 # mybatis配置
 mybatis:
   # 指定全局配置文件位置
@@ -73,5 +76,6 @@ mybatis:
   # 开启驼峰命名法
   configuration:
     map-underscore-to-camel-case: true
+
 # 开启配置报告
 debug: true
