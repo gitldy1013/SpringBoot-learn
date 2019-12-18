@@ -31,3 +31,4 @@ build/
 .vscode/
 /log/
 /springboot-simple/log/demo.log
+/springboot-simple/log/

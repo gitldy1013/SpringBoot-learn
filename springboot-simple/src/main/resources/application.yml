@@ -5,3 +5,6 @@ spring:
   http:
     encoding:
       charset: utf-8
+# 自定也缓存数据时间
+cache:
+  ttl: 3600

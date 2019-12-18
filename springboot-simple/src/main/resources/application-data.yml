@@ -63,7 +63,7 @@ spring:
       ddl-auto: update
       # 控制台显示SQL
     show-sql: true
-# redis配置
+  # redis配置
   redis:
     host: 101.200.86.90
     password: test@dbuser2019

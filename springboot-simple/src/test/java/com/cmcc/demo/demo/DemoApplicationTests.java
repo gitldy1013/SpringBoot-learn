@@ -1,5 +1,6 @@
 package com.cmcc.demo.demo;
 
+import com.cmcc.demo.demo.entity.Employee;
 import com.cmcc.demo.demo.entity.Person;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,8 @@ import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +43,9 @@ class DemoApplicationTests {
 
     @Resource
     private RedisTemplate redisTemplate; //k-v都是Object
+
+    @Resource
+    private RedisTemplate myRedisTemplate; //k-v都是Object 自定义
 
     @Resource
     private StringRedisTemplate stringRedisTemplate; //k-v都是String
@@ -70,8 +76,18 @@ class DemoApplicationTests {
 //        stringRedisTemplate.opsForSet();
 //        stringRedisTemplate.opsForHash();
 //        stringRedisTemplate.opsForZSet();
-        Integer append = stringRedisTemplate.opsForValue().append("msg", "hello");
-
+        //操作字符串 其他类似
+//        Integer append = stringRedisTemplate.opsForValue().append("msg", "hello");
+//        String msg = stringRedisTemplate.opsForValue().get("msg");
+//        log.info("msg"+msg);
+        //保存对象
+        redisTemplate.opsForValue().set("emp01",new Employee());
+        Employee emp01 = (Employee) redisTemplate.opsForValue().get("emp01");
+        log.info(emp01.toString());
+        //序列化
+        myRedisTemplate.opsForValue().set("emp02",new Employee());
+        LinkedHashMap emp02 = (LinkedHashMap) myRedisTemplate.opsForValue().get("emp02");
+        log.info(emp02.toString());
     }
 
 }

@@ -94,6 +94,12 @@ public class DeptController {
      *      1.基于docker的方式安装redis
      *      2.引入redis对应starter依赖spring-boot-starter-data-redis
      *      3.配置文件引入redis配置 主要是端口地址和访问密码
+     *      4.测试缓存：
+     *          原理：CacheManager===Cache 通过缓存组件实现和缓存中存取数据
+     *          1>.引入redis得starter后容器中保存的是RedisCacheManager
+     *          2>.RedisCacheManager帮助我们创建RedisCache来作为缓存组件，RedisCache通过操作redis缓存数据
+     *          3>.默认保存数据 k-v 都是Object 因为此时默认的CacheManager为Redis自己的RedisCacheManager
+     *          操作redis的时候使用的也是默认的redisTemplate 它默认是利用jdk的序列化机制保存数据 需要自定义RedisCacheManager保存json数据
      * @param id
      * @return
      */
@@ -110,7 +116,7 @@ public class DeptController {
         return department;
     }
 
-    @Cacheable(value = "emp",keyGenerator = "myKeyGenerator",condition = "#a0>1 and #id<100",unless = "#a0==2")
+    @Cacheable(value = "emp",keyGenerator = "myKeyGenerator",condition = "#a0>=1 and #id<100",unless = "#a0==2",cacheManager = "myRedisCacheManager")
     @GetMapping("/emp/{id}")
     public Employee getEmp(@PathVariable("id") Integer id) {
         Employee employee = new Employee();
