@@ -3244,7 +3244,7 @@ Spring从3.1开始定义了org.springframework.cache.Cache 和org.springframewor
           操作redis的时候使用的也是默认的redisTemplate 它默认是利用jdk的序列化机制保存数据 需要自定义RedisCacheManager保存json数据
 ```
 
-概念和核心注解:
+## 2、概念和核心注解:
 
 |注解组件|功能解释|
 |---|---|
@@ -3278,12 +3278,73 @@ Cache SpEL available matedata
 |argument|evaluation context|方法参数的名字，可以直接#参数名，也可以使用#p0或a0的形式，0代表参数的索引|#Iban,#a0,#p0|
 |result|evaluation context|方法执行后的返回值(仅当方法执行之后的判断有效，如"unless","cache put"的表达式 "cache evict"的表达式befoteInvocation=false)|result|
 
+# 十、消息中间件
 
+## 1、概述
 
+1. 在大多应用中，我们系统之间需要进行异步通信，即异步消息。 
+2. 异步消息中两个重要概念： 消息代理（message broker）和目的地（destination） 当消息发送者发送消息以后，将由消息代理接管，消息代理保证消息传递到指定目的地。 
+3. 异步消息主要有两种形式的目的地 
+    > 队列（queue）：点对点消息通信（point-to-point） 
+    > 主题（topic）：发布（publish）/订阅（subscribe）消息通信
+4. 点对点式： 
+    > 消息发送者发送消息，消息代理将其放入一个队列中，消息接收者从队列中获取消息内容， 消息读取后被移出队列 
+    > 消息只有唯一的发送者和接受者，但并不是说只能有一个接收者
+5. 发布订阅式： 
+    > 发送者（发布者）发送消息到主题，多个接收者（订阅者）监听（订阅）这个主题，那么 就会在消息到达时同时收到消息
+6. JMS（Java Message Service）java消息服务： 
+    > 基于JVM消息代理的规范。ActiveMQ、HornetMQ是JMS实现
+7. AMQP（Advanced Message Queuing Protocol） 
+    > 高级消息队列协议，也是一个消息代理的规范，兼容JMS 
+    > RabbitMQ是AMQP的实现
+8. Spring支持：
+    > spring-jms提供了对JMS的支持 
+    > spring-rabbit提供了对AMQP的支持 
+    > 需要ConnectionFactory的实现来连接消息代理 
+    > 提供JmsTemplate、RabbitTemplate来发送消息 
+    > @JmsListener（JMS）、@RabbitListener（AMQP）注解在方法上监听消息代理发布的消息 
+    > @EnableJms、@EnableRabbit开启支持
+9. Spring Boot自动配置 
+    > JmsAutoConfiguration 
+    > RabbitAutoConfiguration
 
+## 2、RabbitMq简介
 
+RabbitMQ是一个由erlang开发的AMQP(Advanved Message Queue)的开源实现。
+1. 核心概念:
+ * Producer&Consumer: 
+    > producer指的是消息生产者，consumer消息的消费者。 
+ * Broker: 
+    > 它提供一种传输服务,它的角色就是维护一条从生产者到消费者的路线，保证数据能按照指定的方式进行传输,
+ * Queue:  
+    > 消息队列，提供了FIFO的处理机制，具有缓存消息的能力。rabbitmq中， 队列消息可以设置为持久化，临时或者自动删除。 
+    > 设置为持久化的队列，queue中的消息会在server本地硬盘存储一份，防止 系统crash，数据丢失 
+    > 设置为临时队列，queue中的数据在系统重启之后就会丢失 
+    > 设置为自动删除的队列，当不存在用户连接到server，队列中的数据会被自 动删除 
+ * Exchange:  
+    > 消息交换机,它指定消息按什么规则,路由到哪个队列。 
+    > Exchange有4种类型：direct(默认)，fanout, topic, 和headers，不同类型 的Exchange转发消息的策略有所区别：
+ * Binding:  
+    > 将一个特定的 Exchange 和一个特定的 Queue 绑定起来。 
+    > Exchange 和Queue的绑定可以是多对多的关系。 
+ * virtual host（ vhosts ）:  
+    > 在rabbitmq server上可以创建多个虚拟的message broker，又叫做 virtual hosts (vhosts) 
+    > 每一个vhost本质上是一个mini-rabbitmq server，分别管理各自的 exchange，和bindings 
+    > vhost相当于物理的server，可以为不同app提供边界隔离 
+    > producer和consumer连接rabbit server需要指定一个vhost
+2. 运行机制:
+    ![](images/rabbitmq-01.png)
 
+## 3、整合RabbitMq
 
+1. 引入spring-boot-starter-amqp 
+2. application.yml配置 
+3. 测试RabbitMQ
 
-
-
+* 自动配置:
+    >* RabbitAutoConfiguration
+    >* 自动配置类连接工厂ConnectionFactory
+    >* RabbitProperties 封装了RabbitMQ的配置
+    >* RabbitTemplate 给rabbitmq发送接受消息
+    >* AmqpAdmin RabbitMq系统管理功能组件
+    >* @EnableRabbit + @RabbitListener 监听消息队列的内容

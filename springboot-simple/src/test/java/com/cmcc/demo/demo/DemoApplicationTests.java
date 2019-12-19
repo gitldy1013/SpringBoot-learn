@@ -5,25 +5,24 @@ import com.cmcc.demo.demo.entity.Person;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.springframework.amqp.core.AmqpAdmin;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.DirectExchange;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,13 +41,19 @@ class DemoApplicationTests {
     JdbcTemplate jdbcTemplate;
 
     @Resource
-    private RedisTemplate redisTemplate; //k-v都是Object
+    private RedisTemplate<String, Employee> redisTemplate; //k-v都是Object
 
     @Resource
-    private RedisTemplate myRedisTemplate; //k-v都是Object 自定义
+    private RedisTemplate<String, Employee> myRedisTemplate; //k-v都是Object 自定义
 
     @Resource
     private StringRedisTemplate stringRedisTemplate; //k-v都是String
+
+    @Resource
+    private RabbitTemplate rabbitTemplate;
+
+    @Resource
+    private AmqpAdmin amqpAdmin;
 
     @Test
     void contextLoads() throws SQLException {
@@ -82,12 +87,51 @@ class DemoApplicationTests {
 //        log.info("msg"+msg);
         //保存对象
         redisTemplate.opsForValue().set("emp01",new Employee());
-        Employee emp01 = (Employee) redisTemplate.opsForValue().get("emp01");
+        Employee emp01 = redisTemplate.opsForValue().get("emp01");
+        assert emp01 != null;
         log.info(emp01.toString());
         //序列化
         myRedisTemplate.opsForValue().set("emp02",new Employee());
-        LinkedHashMap emp02 = (LinkedHashMap) myRedisTemplate.opsForValue().get("emp02");
+        Employee emp02 = myRedisTemplate.opsForValue().get("emp02");
+        assert emp02 != null;
         log.info(emp02.toString());
     }
 
+    /**
+     * 测试RabbitMq
+     * 1.单播（点对点）
+     * 2.广播
+     */
+    @Test
+    void rabbitMqSendTest(){
+        Map<String, Object> map = new HashMap<>();
+        map.put("msg","一个测试消息");
+        map.put("data", Arrays.asList("myrabbitmq",123,true));
+        //单播
+        //rabbitTemplate.convertAndSend("exchange.direct","ldy.news",map);
+        //广播
+        Employee employee = new Employee();
+        employee.setId(1);
+        employee.setEmail("123@123.com");
+        employee.setGender(1);
+        employee.setLastName("test");
+        employee.setDId(1);
+        rabbitTemplate.convertAndSend("exchange.fanout","",employee);
+    }
+
+    //@AfterEach
+    public void rabbitMqReceiveTest(){
+        Object receive = rabbitTemplate.receiveAndConvert("ldy.news");
+        assert receive != null;
+        log.info("msg {}",receive.getClass());
+        log.info("msg {}",receive);
+    }
+
+    @Test
+    public void rabbitAmqpTest(){
+        amqpAdmin.declareExchange(new DirectExchange("amqpadmin.exchange"));
+        log.info("amqpExchange: 创建完成");
+        amqpAdmin.declareQueue(new Queue("amqpadmin.queue",true));
+        amqpAdmin.declareBinding(new Binding("amqpadmin.queue",Binding.DestinationType.QUEUE,"amqpadmin.exchange","amqp.haha",null));
+    }
 }
