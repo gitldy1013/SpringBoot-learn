@@ -1,6 +1,6 @@
 spring:
   profiles:
-    include: data,log,cmcc,rabbitmq
+    include: data,log,cmcc,rabbitmq,elastic
     active: dev
   http:
     encoding:

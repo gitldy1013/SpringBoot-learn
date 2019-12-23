@@ -11,12 +11,12 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class EmpServiceImpl implements EmpService {
     @Override
-    @RabbitListener(queues = "ldy.news")
+    //@RabbitListener(queues = "ldy.news")
     public void receive(Employee employee) {
         log.info("接收到EMP {}",employee);
     }
 
-    @RabbitListener(queues = "liudongyang.news")
+    //@RabbitListener(queues = "liudongyang.news")
     public void receiveMsg(Message msg) {
         log.info("接收到EMPMSG {}",msg.getBody());
     }

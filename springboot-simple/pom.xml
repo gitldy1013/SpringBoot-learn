@@ -50,6 +50,12 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <!-- 健康检查 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
         <!-- spring容器测试整合包 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -127,6 +133,20 @@
         </dependency>
         <!--amqp starter -->
 
+        <!--elasticsearch starter -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+        </dependency>
+        <!--elasticsearch starter -->
+
+        <!-- jest -->
+        <dependency>
+            <groupId>io.searchbox</groupId>
+            <artifactId>jest</artifactId>
+            <version>6.3.1</version>
+        </dependency>
+        <!-- jest -->
     </dependencies>
 
 </project>

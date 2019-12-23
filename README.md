@@ -3339,7 +3339,7 @@ RabbitMQ是一个由erlang开发的AMQP(Advanved Message Queue)的开源实现�
 
 1. 引入spring-boot-starter-amqp 
 2. application.yml配置 
-3. 测试RabbitMQ
+3. 测试RabbitMQ (docker部署:docker run -d -p 5672:5672 -p 15672:15672 --name myrabbitmq rabbitmq:management)
 
 * 自动配置:
     >* RabbitAutoConfiguration
@@ -3348,3 +3348,40 @@ RabbitMQ是一个由erlang开发的AMQP(Advanved Message Queue)的开源实现�
     >* RabbitTemplate 给rabbitmq发送接受消息
     >* AmqpAdmin RabbitMq系统管理功能组件
     >* @EnableRabbit + @RabbitListener 监听消息队列的内容
+
+# 十一、检索
+
+## 1.概念
+我们的应用经常需要添加检索功能，更或者是大量日志检索分析等，Spring Boot 通过整合Spring Data ElasticSearch为我们提供了非常便捷的检索功能支持；
+Elasticsearch是一个分布式搜索服务，提供Restful API，底层基于Lucene，采用 多shard的方式保证数据安全，并且提供自动resharding的功能，github等大型的 站点也是采用了Elasticsearch作为其搜索服务，
+
+• 以员工文档 的形式存储为例：一个文档代表一个员工数据。存储数据到 Elasticsearch 的行为叫做 索引 ，但在索引一个文档之前，需要确定将文档存 储在哪里。 
+• 一个 Elasticsearch 集群可以 包含多个 索引 ，相应的每个索引可以包含多 个 类型 。 这些不同的类型存储着多个 文档 ，每个文档又有 多个 属性 。 
+• 类似关系： 
+  >– 索引-数据库 
+  >– 类型-表 
+  >– 文档-表中的记录 
+  >– 属性-列
+
+## 2.整合测试
+
+    docker测试服务：docker run -e ES_JAVA_OPTS="-Xms256m -Xmx256m" -d -p 9200:9200 -p 9300:9300 --name ES01 elasticsearch:2.4.0
+    • 引入spring-boot-starter-data-elasticsearch 
+    • 安装Spring Data 对应版本的ElasticSearch 
+    • application.yml配置 
+    • Spring Boot自动配置的 ElasticsearchRepository、Client 
+    • 测试ElasticSearch
+    
+springboot支持两种技术与ES交互: (默认使用spring data elasticsearch操作elasticsearch)
+
+   > Jest (需要Jest工具包JestClient支持 采用HTTP方式)
+
+   > SpringData ElasticSearch:
+   >* 1).通过Client 配置节点信息clusterNodes和节点名称clusterName
+   >* 2).通过ElasticSearchTemplate操作ES
+   >* 3).编写一个ElasticsearchRespostory的子接口来操作ES
+    
+# 十二、定时任务
+
+
+

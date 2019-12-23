@@ -1,7 +1,12 @@
 package com.cmcc.demo.demo;
 
+import com.cmcc.demo.demo.dao.EmpRepository;
 import com.cmcc.demo.demo.entity.Employee;
 import com.cmcc.demo.demo.entity.Person;
+import io.searchbox.client.JestClient;
+import io.searchbox.core.Index;
+import io.searchbox.core.Search;
+import io.searchbox.core.SearchResult;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +24,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -86,12 +92,12 @@ class DemoApplicationTests {
 //        String msg = stringRedisTemplate.opsForValue().get("msg");
 //        log.info("msg"+msg);
         //保存对象
-        redisTemplate.opsForValue().set("emp01",new Employee());
+        redisTemplate.opsForValue().set("emp01", new Employee());
         Employee emp01 = redisTemplate.opsForValue().get("emp01");
         assert emp01 != null;
         log.info(emp01.toString());
         //序列化
-        myRedisTemplate.opsForValue().set("emp02",new Employee());
+        myRedisTemplate.opsForValue().set("emp02", new Employee());
         Employee emp02 = myRedisTemplate.opsForValue().get("emp02");
         assert emp02 != null;
         log.info(emp02.toString());
@@ -103,10 +109,10 @@ class DemoApplicationTests {
      * 2.广播
      */
     @Test
-    void rabbitMqSendTest(){
+    void rabbitMqSendTest() {
         Map<String, Object> map = new HashMap<>();
-        map.put("msg","一个测试消息");
-        map.put("data", Arrays.asList("myrabbitmq",123,true));
+        map.put("msg", "一个测试消息");
+        map.put("data", Arrays.asList("myrabbitmq", 123, true));
         //单播
         //rabbitTemplate.convertAndSend("exchange.direct","ldy.news",map);
         //广播
@@ -116,22 +122,74 @@ class DemoApplicationTests {
         employee.setGender(1);
         employee.setLastName("test");
         employee.setDId(1);
-        rabbitTemplate.convertAndSend("exchange.fanout","",employee);
+        rabbitTemplate.convertAndSend("exchange.fanout", "", employee);
     }
 
     //@AfterEach
-    public void rabbitMqReceiveTest(){
+    public void rabbitMqReceiveTest() {
         Object receive = rabbitTemplate.receiveAndConvert("ldy.news");
         assert receive != null;
-        log.info("msg {}",receive.getClass());
-        log.info("msg {}",receive);
+        log.info("msg {}", receive.getClass());
+        log.info("msg {}", receive);
     }
 
     @Test
-    public void rabbitAmqpTest(){
+    public void rabbitAmqpTest() {
         amqpAdmin.declareExchange(new DirectExchange("amqpadmin.exchange"));
         log.info("amqpExchange: 创建完成");
-        amqpAdmin.declareQueue(new Queue("amqpadmin.queue",true));
-        amqpAdmin.declareBinding(new Binding("amqpadmin.queue",Binding.DestinationType.QUEUE,"amqpadmin.exchange","amqp.haha",null));
+        amqpAdmin.declareQueue(new Queue("amqpadmin.queue", true));
+        amqpAdmin.declareBinding(new Binding("amqpadmin.queue", Binding.DestinationType.QUEUE, "amqpadmin.exchange", "amqp.haha", null));
+    }
+
+    @Resource
+    private JestClient jestClient;
+
+    @Test
+    public void JestIndexTest() {
+        //向ES中索引（保存）数据
+        Employee employee = new Employee();
+        employee.setId(2);
+        employee.setLastName("123");
+        employee.setGender(1);
+        employee.setEmail("123@test.com");
+        employee.setDId(1);
+        Index build = new Index.Builder(employee).index("ldy").type("news").id(employee.getId().toString()).build();
+        try {
+            jestClient.execute(build);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void JestSearchTest() throws IOException {
+        //从ES中搜索（检索）数据
+        String json = "{" +
+                "    \"query\":{\n" +
+                "        \"match\":{\n" +
+                "            \"id\" : \"2\"\n" +
+                "        }\n" +
+                "    }\n" +
+                "}";
+        Search build = new Search.Builder(json).addIndex("ldy").addType("news").build();
+        SearchResult execute = jestClient.execute(build);
+        String jsonString = execute.getJsonString();
+        log.info("结果= {}", jsonString);
+    }
+
+    @Resource
+    private EmpRepository empRepository;
+
+    @Test
+    public void EsTest() {
+        Employee employee = new Employee();
+        employee.setId(2);
+        employee.setLastName("321");
+        employee.setGender(0);
+        employee.setEmail("123");
+        employee.setDId(1);
+        //empRepository.index(employee);
+        Employee byLastNameLike = empRepository.findByLastNameLike("3");
+        log.info("结果：{}", byLastNameLike);
     }
 }
