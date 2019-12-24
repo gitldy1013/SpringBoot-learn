@@ -3381,7 +3381,49 @@ springboot支持两种技术与ES交互: (默认使用spring data elasticsearch�
    >* 2).通过ElasticSearchTemplate操作ES
    >* 3).编写一个ElasticsearchRespostory的子接口来操作ES
     
-# 十二、定时任务
+# 十二、Springboot与任务
+
+>异步任务、定时任务、邮件任务
+
+## 1.异步任务
+
+在Java应用中，绝大多数情况下都是通过同步的方式来实现交互处理的；但是在处理与第三方系统交互的时候，容易造成响应迟缓的情况，之前大部分都是使用 多线程来完成此类任务，其实，在Spring 3.x之后，就已经内置了@Async来完美解决这个问题。
+
+>* 两个注解： @EnableAysnc、@Aysnc
+
+## 2.定时任务 
+
+项目开发中经常需要执行一些定时任务，比如需要在每天凌晨时候，分析一次前 一天的日志信息。Spring为我们提供了异步执行任务调度的方式，提供 TaskExecutor 、TaskScheduler 接口。
+
+>* 两个注解：@EnableScheduling、@Scheduled
 
 
+|字段| 允许值| 允许的特殊字符| 
+|---|---|---|
+|秒| 0-59| , - * / |
+|分| 0-59| , - * / |
+|小时| 0-23| , - * / |
+|日期| 1-31| , - * ? / L W C |
+|月份| 1-12或JAN-DEC| , - * / |
+|星期| 1-7或SUN-SAT| , - * ? / L C # |
+|年（可选）| 空,1970-2099| , - * /|
 
+|特殊字符|代表含义|
+|---|---|
+|, |枚举|
+|- |区间|
+|* |任意|
+|/ |步长|
+|? |日/星期冲突匹配|
+|L |最后|
+|W |工作日|
+|C |和calendar联系后计算过的值|
+|# |星期，4#2，第2个星期三|
+
+## 3.邮件任务
+
+>* 邮件发送需要引入spring-boot-starter-mail 
+>* Spring Boot 自动配置MailSenderAutoConfiguration 
+>* 定义MailProperties内容，配置在application.yml中 
+>* 自动装配JavaMailSender 
+>* 测试邮件发送
