@@ -1,6 +1,6 @@
 package com.cmcc.demo.demo;
 
-import com.cmcc.demo.demo.dao.EmpRepository;
+//import com.cmcc.demo.demo.dao.EmpRepository;
 import com.cmcc.demo.demo.entity.Employee;
 import com.cmcc.demo.demo.entity.Person;
 import io.searchbox.client.JestClient;
@@ -20,10 +20,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import javax.sql.DataSource;
+import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -177,10 +183,10 @@ class DemoApplicationTests {
         log.info("结果= {}", jsonString);
     }
 
-    @Resource
-    private EmpRepository empRepository;
+    //@Resource
+    //private EmpRepository empRepository;
 
-    @Test
+    //@Test
     public void EsTest() {
         Employee employee = new Employee();
         employee.setId(2);
@@ -189,7 +195,31 @@ class DemoApplicationTests {
         employee.setEmail("123");
         employee.setDId(1);
         //empRepository.index(employee);
-        Employee byLastNameLike = empRepository.findByLastNameLike("3");
-        log.info("结果：{}", byLastNameLike);
+        //Employee byLastNameLike = empRepository.findByLastNameLike("3");
+        //log.info("结果：{}", byLastNameLike);
+    }
+
+    @Autowired
+    JavaMailSenderImpl javaMailSender;
+
+    @Test
+    public void sendMail() throws MessagingException {
+        //简单邮件
+        SimpleMailMessage msg = new SimpleMailMessage();
+        msg.setSubject("通知");
+        msg.setText("没事");
+        msg.setTo("m13691363167@163.com");
+        msg.setFrom("1126176532@qq.com");
+        //javaMailSender.send(msg);
+        //复杂邮件
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage,true);
+        mimeMessageHelper.setSubject("通知");
+        mimeMessageHelper.setText("<b style='color:red'>没事</b>",true);
+        mimeMessageHelper.setTo("m13691363167@163.com");
+        mimeMessageHelper.setFrom("1126176532@qq.com");
+        mimeMessageHelper.addAttachment("1.jpg",new File("C:\\Users\\liudongyang\\IdeaProjects\\demo\\images\\2018-02-04_123955.png"));
+        mimeMessageHelper.addAttachment("2.jpg",new File("C:\\Users\\liudongyang\\IdeaProjects\\demo\\images\\rabbitmq-01.png"));
+        javaMailSender.send(mimeMessage);
     }
 }
