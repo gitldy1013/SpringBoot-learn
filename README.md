@@ -418,7 +418,112 @@ public class Person {
 }
 ```
 
+#### 自定义yaml配置文件
+```
+@ConfigurationProperties(prefix = "app") //节点名称
+@PropertySource(value = {"classpath:config/serviceConfig.yml"}) //文件路径及文件名称一定要对哦
+@Value("${配置文件中app下对应的字段名称}")
+```
 
+>* 在com.isoft.centerserver下新建包common, 并新建类ServiceConfig.java，如下：
+```
+package com.isoft.centerserver.common;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Component;
+
+/**
+ * Created by cmcc.
+ */
+@Component
+@ConfigurationProperties(prefix = "app")
+@PropertySource(value = {"classpath:config/serviceConfig.yml"})
+public class ServiceConfig
+{
+    public String getName()
+    {
+        return name;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    public String getDescription()
+    {
+        return description;
+    }
+
+    public void setDescription(String description)
+    {
+        this.description = description;
+    }
+
+    public String getCreateTime()
+    {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime)
+    {
+        this.createTime = createTime;
+    }
+
+    @Value("${name}")
+    private String name;
+
+    @Value("${description}")
+    private String description;
+
+    @Value("${create}")
+    private String createTime;
+}
+```
+
+>* 在resources下添加文件夹config，在此文件夹下新建配置文件serviceConfig.yml, 输入以下内容：
+
+```
+app:
+  name: myService
+  description: test read yaml file
+  create: 20180712
+```
+
+>* controller中引用
+```
+package com.isoft.centerserver.controller;
+
+import com.isoft.centerserver.common.ServiceConfig;
+import net.sf.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+/**
+ * Created by cmcc
+ */
+@RestController
+public class HealthController
+{
+    @Autowired
+    private ServiceConfig serviceConfig;
+
+    @RequestMapping(value = "/health", method = RequestMethod.GET)
+    public JSONObject health()
+    {
+        JSONObject result = new JSONObject();
+        result.put("status", 200);
+        result.put("description", this.serviceConfig.getDescription());
+        result.put("name", this.serviceConfig.getName());
+
+        return result;
+    }
+}
+```
 
 #### 4、@PropertySource&@ImportResource&@Bean
 
